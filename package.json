@@ -1,0 +1,25 @@
+{
+  "name": "texashousewitness",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jasonmb626/texashousewitness.git"
+  },
+  "author": "Jason Brunelle",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/jasonmb626/texashousewitness/issues"
+  },
+  "homepage": "https://github.com/jasonmb626/texashousewitness#readme",
+  "dependencies": {
+    "exceljs": "^4.2.0",
+    "jsdom": "^16.4.0",
+    "node-fetch": "^2.6.1",
+    "node-xlsx": "^0.16.1"
+  }
+}
