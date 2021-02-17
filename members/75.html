@@ -9199,5 +9199,26 @@ Many photos in <i>Texas Legislators: Past and Present</i> are used with permissi
         </div>
     </div>
 </div>
+<script>
+	console.log('Running Script')
+	const table = document.querySelector('#tableToSort');
+	console.log(table);
+	const rows=table.getElementsByTagName('tr');
+	Array.from(rows).forEach((row, index) => {
+		if (index > 0) {
+			const columns = row.getElementsByTagName('td');
+			const URL = columns[0].children[0].getAttribute('href');
+			const startPos = URL.indexOf('memberID=') + 'memberID='.length;
+			const endPos = URL.indexOf('&', startPos);
+			const memberId = URL.slice(startPos, endPos);
+			const district = columns[2].innerHTML.trim();
+			const chamber = columns[3].textContent.trim();
+			const party = columns[6].innerHTML.trim().slice(0, 1);
+			const city = columns[7].innerHTML.trim();
+			const county = columns[8].innerHTML.trim();
+			console.log({legislature: 75, memberId, district, chamber, party, city, county});
+		}
+  });
+</script>
 </body>
 </html>
