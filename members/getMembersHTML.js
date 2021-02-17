@@ -5,6 +5,8 @@
  * out the html document to 75.html, 76.html etc.
  *
  * Parsing of those docs done elsewhere in order to populate member, member_surname, and representation tables.
+ * 
+ * Next step: parseMems-FullNames-toODS.js
  *
  */
 

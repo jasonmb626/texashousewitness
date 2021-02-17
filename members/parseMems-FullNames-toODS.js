@@ -1,15 +1,26 @@
 /*
  * This script reads from 75.html, 76.html, etc (each number represents a legislature.
- * It loops through the members table and strips the memberIds from the urls to their individual pages
- * and reads the member names from the same cell.
+ * It loops through the members table and parses the memberIds from the urls to their individual pages
+ * and reads the member names from the same cell. As there are duplicates between legislatures it doesn't add
+ * a record from leg 76 if it was already there in 75, etc. This step is literally just to get all member names and IDs.
  *
- * Finally it outputs the data as a csv (tab separated values).
+ * It outputs the data to an ODS file.
  *
  * Creates a url-list file for wget to download individual memeber pages
  * 
- * Manual followup required: remove duplicates and tabulate first/last/nicknames
- *
+ * Followup necessary: 
+ *  *wget all member pages from url file created below
+ *  *genParseMemberPagesScript.js ==> generates a shell script parseMemberPages.sh
+ *  *run parseMemberPages.sh ==> outputs member_surnames.json -- surnames linked to member IDs.
+ *  *with that
+ *  parse the full names to separate out:
+ *  *given name
+ *  *middle initial (if applicable)
+ *  *nickname (if applicable)
+ *  from the surname
+ *  *output full ODS
  */
+
 const fs = require('fs');
 const jsdom = require('jsdom');
 const XLSX = require('xlsx');
@@ -50,7 +61,9 @@ const ws = XLSX.utils.json_to_sheet(members.sort((mem1, mem2) => parseInt(mem1.m
 /* Add the worksheet to the workbook */
 XLSX.utils.book_append_sheet(wb, ws, 'members');
 /* output format determined by filename */
-XLSX.writeFile(wb, 'members.ods');
+XLSX.writeFile(wb, 'members-fullnames.ods');
 console.log('Workbook written!')
 
+//write out list of URLs to download.
+//download with: wget -i members-urls.txt -w 3
 fs.writeFileSync('members-urls.txt', buffer.trim());

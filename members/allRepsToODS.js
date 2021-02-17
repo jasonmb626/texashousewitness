@@ -69,4 +69,3 @@ XLSX.utils.book_append_sheet(wb, ws, 'representations');
 /* output format determined by filename */
 XLSX.writeFile(wb, 'reps.ods');
 console.log('Workbook written!')
-//^i't:a'wi'g_a',j

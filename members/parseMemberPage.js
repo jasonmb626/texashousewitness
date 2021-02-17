@@ -34,7 +34,8 @@ const surnameLetter = imgSrc.slice(startIndex, startIndex+1);
 
 member_surnames.push({
     memberId,
-    surname: guessSurnameBasedOnStartLetter(memberFullName, surnameLetter)
+    surname: guessSurnameBasedOnStartLetter(memberFullName, surnameLetter),
+    current: true
 });
 
 const namesCell = dom.querySelector('span[style*="175%"]').parentElement;
@@ -50,7 +51,8 @@ if (otherSurnames != '') {
         if (name.trim() !== '') {
             member_surnames.push({
                 memberId,
-                surname: name.trim() 
+                surname: name.trim(),
+                current: false
             });
         }
     })
