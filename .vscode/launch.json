@@ -10,7 +10,7 @@
         "<node_internals>/**"
       ],
       "program": "${file}",
-      "args": ["MeetingsByCmte.aspx?Leg=86_Chamber=H_CmteCode=C010"],
+      "args": ["C4702019041714001.HTM"],
       "console": "integratedTerminal"
     }
   ]
