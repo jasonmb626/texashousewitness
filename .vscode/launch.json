@@ -1,6 +1,7 @@
 {
   "version": "0.2.0",
   "configurations": [
+
     {
       "type": "pwa-node",
       "request": "launch",
@@ -9,7 +10,7 @@
         "<node_internals>/**"
       ],
       "program": "${file}",
-      "args": ["5650", "Dan Barrett"],
+      "args": ["MeetingsByCmte.aspx?Leg=86_Chamber=H_CmteCode=C010"],
       "console": "integratedTerminal"
     }
   ]
