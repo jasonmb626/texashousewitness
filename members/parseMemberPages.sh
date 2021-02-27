@@ -1,5 +1,5 @@
 #!/bin/bash
-rm -f member_surnames.json
+rm -f member_surNames.json
 node parseMemberPage.js 21 "Bill Ratliff"
 node parseMemberPage.js 22 "Ken Armbrister"
 node parseMemberPage.js 23 "Gonzalo Barrientos"

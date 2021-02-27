@@ -7,8 +7,8 @@
  * It outputs the data to an ODS file.
  *
  * Creates a url-list file for wget to download individual memeber pages
- * 
- * Followup necessary: 
+ *
+ * Followup necessary:
  *  *wget all member pages from url file created below
  *  *genParseMemberPagesScript.js ==> generates a shell script parseMemberPages.sh
  *  *run parseMemberPages.sh ==> outputs member_surnames.json -- surnames linked to member IDs.
@@ -24,7 +24,7 @@
 const fs = require('fs');
 const jsdom = require('jsdom');
 const XLSX = require('xlsx');
-const {JSDOM} = jsdom;
+const { JSDOM } = jsdom;
 let buffer = '';
 
 const members = [];
@@ -44,25 +44,32 @@ for (let i = 75; i <= 86; i++) {
       const startPos = URL.indexOf('memberID=') + 'memberID='.length;
       const endPos = URL.indexOf('&', startPos);
       const memberId = URL.slice(startPos, endPos);
-      if (!membersSet.has(memberId + memberFullName))
-      {
+      if (!membersSet.has(memberId + memberFullName)) {
         membersSet.add(memberId + memberFullName);
-        members.push({memberId, memberFullName});
-        buffer = buffer + 'https://lrl.texas.gov/legeLeaders/members/memberDisplay.cfm?memberID=' + memberId + '\n';
+        members.push({ memberId, memberFullName });
+        buffer =
+          buffer +
+          'https://lrl.texas.gov/legeLeaders/members/memberDisplay.cfm?memberID=' +
+          memberId +
+          '\n';
       }
     }
   });
-};
+}
 
 /* create a new blank workbook */
 const wb = XLSX.utils.book_new();
 /* make worksheet */
-const ws = XLSX.utils.json_to_sheet(members.sort((mem1, mem2) => parseInt(mem1.memberId) - parseInt(mem2.memberId)));
+const ws = XLSX.utils.json_to_sheet(
+  members.sort(
+    (mem1, mem2) => parseInt(mem1.memberId) - parseInt(mem2.memberId)
+  )
+);
 /* Add the worksheet to the workbook */
 XLSX.utils.book_append_sheet(wb, ws, 'members');
 /* output format determined by filename */
-XLSX.writeFile(wb, 'members-fullnames.ods');
-console.log('Workbook written!')
+XLSX.writeFile(wb, 'members-fullNames.ods');
+console.log('Workbook written!');
 
 //write out list of URLs to download.
 //download with: wget -i members-urls.txt -w 3
