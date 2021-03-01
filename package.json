@@ -17,6 +17,7 @@
   },
   "homepage": "https://github.com/jasonmb626/texashousewitness#readme",
   "dependencies": {
+    "axios": "^0.21.1",
     "exceljs": "^4.2.0",
     "jsdom": "^16.4.0",
     "node-fetch": "^2.6.1",
