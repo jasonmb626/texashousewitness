@@ -5,11 +5,11 @@ const { start } = require('repl');
 const inFileName = process.argv[2];
 let searchStr = 'Leg=';
 let startIndex = inFileName.indexOf(searchStr) + searchStr.length;
-let endIndex = inFileName.indexOf('_', startIndex);
+let endIndex = inFileName.indexOf('&', startIndex);
 const leg = inFileName.substring(startIndex, endIndex);
 searchStr = 'Chamber=';
 startIndex = inFileName.indexOf(searchStr) + searchStr.length;
-endIndex = inFileName.indexOf('_', startIndex);
+endIndex = inFileName.indexOf('&', startIndex);
 const chamber = inFileName.substring(startIndex, endIndex);
 searchStr = 'CmteCode=';
 startIndex = inFileName.indexOf(searchStr) + searchStr.length;
@@ -18,7 +18,7 @@ const cmte = inFileName.substring(startIndex, endIndex);
 
 const meetings = [];
 
-const html = fs.readFileSync(`meetings/HTML/${process.argv[2]}`).toString();
+const html = fs.readFileSync(`meeting/HTML/${process.argv[2]}`).toString();
 
 const { JSDOM } = jsdom;
 const dom = new JSDOM(html).window.document;
@@ -51,7 +51,7 @@ Array.from(TRs).forEach((tr) => {
   }
 });
 
-fs.writeFileSync(`meetings/JSON/${inFileName}.json`, JSON.stringify(meetings));
+fs.writeFileSync(`meeting/JSON/${inFileName}.json`, JSON.stringify(meetings));
 
 function makePostgresDTTMString(dateStr, timeStr) {
   startIndex = 0;
