@@ -1,6 +1,8 @@
 {
   "version": "0.2.0",
   "configurations": [
+    
+
 
     {
       "type": "pwa-node",
@@ -10,7 +12,7 @@
         "<node_internals>/**"
       ],
       "program": "${file}",
-      "args": ["C4702019041714001.HTM"],
+      "args": ["./capitol.texas.gov/tlodocs/75R/witlistmtg/html/C2001997040913301.HTM"],
       "console": "integratedTerminal"
     }
   ]
