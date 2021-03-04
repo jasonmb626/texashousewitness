@@ -1,3 +1,5 @@
+const { check } = require('prettier');
+
 module.exports = {
   scrape: function (html, meeting_cd) {
     const witnessRecords = [];
@@ -18,7 +20,7 @@ module.exports = {
     let restOfLine = '';
 
     const lines = html.split('\n');
-    lines.forEach((line) => {
+    lines.forEach((line, i) => {
       restOfLine = '';
       if (mode === 'ENTER' && line.includes('WITNESS LIST')) {
         mode = 'COMMITTEE NAME';
@@ -26,8 +28,13 @@ module.exports = {
         committee = line.trim();
         mode = 'DTTM';
       } else if (mode === 'DTTM' && line.trim() !== '') {
-        dttm = line.trim();
-        mode = 'WITNESS_RECORDS';
+        if (line.includes('(') && line.includes(')')) {
+          //this is actually the subcommittee name, so appent to committee
+          committee += ' ' + line.trim();
+        } else {
+          dttm = line.trim();
+          mode = 'WITNESS_RECORDS';
+        }
       } else if (mode === 'WITNESS_RECORDS' && !lineBlankOrClosingHTML(line)) {
         searchStr = '/BillLookup/History.aspx?LegSess=';
         if (line.includes(searchStr)) {
@@ -36,7 +43,6 @@ module.exports = {
           organization = '';
           position = '';
           rbnt = false;
-          self = false;
           startIndex = line.indexOf(searchStr) + searchStr.length;
           endIndex = line.indexOf('&', startIndex);
           session = line.substring(startIndex, endIndex);
@@ -70,55 +76,24 @@ module.exports = {
           } else {
             if (restOfLine === '') restOfLine = line.trim();
             self = false;
-            const splitWitness = splitOneWitness(restOfLine);
-            if (splitWitness.organization.toUpperCase().startsWith('SELF')) {
-              self = true;
-              splitWitness.organization = splitWitness.organization
-                .substring(4, splitWitness.organization.length)
-                .trim();
-            } else if (
-              splitWitness.organization.toUpperCase().endsWith('SELF')
-            ) {
-              self = true;
-              splitWitness.organization = splitWitness.organization
-                .substring(
-                  splitWitness.organization.length - 4,
-                  splitWitness.organization.length
-                )
-                .trim();
+            startIndex = restOfLine.indexOf('(');
+            endIndex = restOfLine.indexOf(')');
+            if (endIndex < startIndex || endIndex === -1) {
+              restOfLine += lines[i + 1];
+              endIndex = restOfLine.indexOf(')');
+              if (endIndex < startIndex || endIndex === -1) {
+                error = true;
+              } else {
+                error = false;
+                lines[i + 1] = '';
+              }
+            } else {
+              error = false;
             }
-            searchStr = 'SELF &';
-            if (splitWitness.organization.toUpperCase().includes(searchStr)) {
-              startIndex = splitWitness.organization
-                .toUpperCase()
-                .indexOf(searchStr);
-              endIndex = startIndex + searchStr.length;
-              const middleOfString = splitWitness.organization.substring(
-                startIndex,
-                endIndex
-              );
-              splitWitness.organization = splitWitness.organization.replace(
-                middleOfString,
-                ''
-              );
-              self = true;
-            }
-            searchStr = '& SELF';
-            if (splitWitness.organization.toUpperCase().includes(searchStr)) {
-              startIndex = splitWitness.organization
-                .toUpperCase()
-                .indexOf(searchStr);
-              endIndex = startIndex + searchStr.length;
-              const middleOfString = splitWitness.organization.substring(
-                startIndex,
-                endIndex
-              );
-              splitWitness.organization = splitWitness.organization.replace(
-                middleOfString,
-                ''
-              );
-              self = true;
-            }
+
+            const splitWitness = splitOneWitness(
+              removeExcessInnerspaceAndTrim(restOfLine)
+            );
             witnessRecord = {
               meeting_cd,
               committee,
@@ -128,11 +103,12 @@ module.exports = {
               bill_cd,
               position,
               rbnt,
-              self,
+              self: splitWitness.self,
               fullWitnessName: restOfLine,
               given_name: splitWitness.given_name,
               sur_name: splitWitness.sur_name,
               organization: splitWitness.organization,
+              error,
             };
             witnessRecords.push(witnessRecord);
           }
@@ -148,6 +124,7 @@ function splitOneWitness(fullWitnessName) {
   let sur_name = '';
   let organization = '';
   let restOfLine = '';
+  let self = false;
 
   let startIndex = fullWitnessName.indexOf('(');
   let endIndex = -1;
@@ -168,10 +145,40 @@ function splitOneWitness(fullWitnessName) {
   } else {
     given_name = restOfLine.substring(0, restOfLine.length).trim();
   }
+  ['HIMSELF', 'HERSELF', 'SELF'].forEach((checkWord) => {
+    if (organization.toUpperCase().startsWith(checkWord)) {
+      self = true;
+      organization = organization
+        .substring(checkWord.length, organization.length)
+        .trim();
+    } else if (organization.toUpperCase().endsWith(checkWord)) {
+      self = true;
+      organization = organization
+        .substring(organization.length - checkWord.length, organization.length)
+        .trim();
+    }
+    searchStr = `${checkWord} &`;
+    if (organization.toUpperCase().includes(searchStr)) {
+      startIndex = organization.toUpperCase().indexOf(searchStr);
+      endIndex = startIndex + searchStr.length;
+      const middleOfString = organization.substring(startIndex, endIndex);
+      organization = organization.replace(middleOfString, '');
+      self = true;
+    }
+    searchStr = `& ${checkWord}`;
+    if (organization.toUpperCase().includes(searchStr)) {
+      startIndex = organization.toUpperCase().indexOf(searchStr);
+      endIndex = startIndex + searchStr.length;
+      const middleOfString = organization.substring(startIndex, endIndex);
+      organization = organization.replace(middleOfString, '');
+      self = true;
+    }
+  });
   return {
     given_name,
     sur_name,
     organization,
+    self,
   };
 }
 
@@ -182,4 +189,12 @@ function lineBlankOrClosingHTML(line) {
   if (line.toUpperCase().includes('</BODY>')) blank = true;
   if (line.toUpperCase().includes('</HTML>')) blank = true;
   return blank;
+}
+
+function removeExcessInnerspaceAndTrim(inStr) {
+  let tmpStr = inStr.trim().replace('  ', ' ');
+  while (tmpStr.includes('  ')) {
+    tmpStr = tmpStr.replace('  ', ' ');
+  }
+  return tmpStr;
 }

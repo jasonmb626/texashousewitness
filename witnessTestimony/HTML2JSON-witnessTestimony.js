@@ -28,6 +28,10 @@ let scrape;
 
 switch (parseInt(leg)) {
   case 75:
+  case 76:
+  case 77:
+  case 78:
+  case 79:
     scrape = strategyA.scrape;
     break;
   case 86:
