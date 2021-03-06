@@ -10,6 +10,8 @@ module.exports = {
     let startIndex = -1;
     let endIndex = -1;
 
+    const records = [];
+
     let bill_name = '';
     let bill_cd = '';
     let session = '';
@@ -21,7 +23,7 @@ module.exports = {
 
     const Ps = dom.getElementsByTagName('p');
     Array.from(Ps).forEach((p, i) => {
-      const sp = p.firstChild;
+      const sp = p.querySelector('span');
       if (i === 0) {
         // do nothing
       } else if (i === 1) {
@@ -35,6 +37,11 @@ module.exports = {
           .replace('\n', ' ')
           .trim();
       } else {
+        if (!sp.innerHTML) {
+          console.log(p.innerHTML);
+          console.log(sp.innerHTML);
+          console.log('No sp.innerHTML');
+        }
         if (sp.innerHTML.includes('/BillLookup/History.aspx?')) {
           const a = sp.getElementsByTagName('a')[0];
           const href = a.getAttribute('href');
@@ -103,37 +110,37 @@ module.exports = {
         }
       }
     });
-  },
-  splitFullWitness: function (fullWitness) {
-    let witnessObj = {};
-    const splitWitness = fullWitness.split('\n');
-    witnessObj.surName = splitWitness[0].trim();
-    if (witnessObj.surName.endsWith(',')) {
-      witnessObj.surName = witnessObj.surName.substring(
-        0,
-        witnessObj.surName.length - 1
-      );
-    }
-    if (splitWitness[1]) {
-      const givenAndOrgName = splitWitness[1].split('(');
-      witnessObj.givenName = givenAndOrgName[0].trim();
-      if (givenAndOrgName[1]) {
-        witnessObj.organization = givenAndOrgName[1]
-          .replace('Self;', '')
-          .replace('Self)', '')
-          .trim();
-        if (witnessObj.organization.endsWith(')')) {
-          witnessObj.organization = witnessObj.organization.substring(
-            0,
-            witnessObj.organization.length - 1
-          );
-        }
-      } else {
-        //Most likely scenario: Organization name listed as individual's name
-        witnessObj.organization =
-          witnessObj.givenName + ' ' + witnessObj.surName;
-      }
-    }
-    return witnessObj;
+    return records;
   },
 };
+function splitFullWitness(fullWitness) {
+  let witnessObj = {};
+  const splitWitness = fullWitness.split('\n');
+  witnessObj.surName = splitWitness[0].trim();
+  if (witnessObj.surName.endsWith(',')) {
+    witnessObj.surName = witnessObj.surName.substring(
+      0,
+      witnessObj.surName.length - 1
+    );
+  }
+  if (splitWitness[1]) {
+    const givenAndOrgName = splitWitness[1].split('(');
+    witnessObj.givenName = givenAndOrgName[0].trim();
+    if (givenAndOrgName[1]) {
+      witnessObj.organization = givenAndOrgName[1]
+        .replace('Self;', '')
+        .replace('Self)', '')
+        .trim();
+      if (witnessObj.organization.endsWith(')')) {
+        witnessObj.organization = witnessObj.organization.substring(
+          0,
+          witnessObj.organization.length - 1
+        );
+      }
+    } else {
+      //Most likely scenario: Organization name listed as individual's name
+      witnessObj.organization = witnessObj.givenName + ' ' + witnessObj.surName;
+    }
+  }
+  return witnessObj;
+}

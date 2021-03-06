@@ -4,7 +4,7 @@ const path = require('path');
 console.log(__dirname);
 
 const strategyA = require('./strategies/a');
-// const strategyB = require('./strategies/b');
+const strategyB = require('./strategies/b');
 const strategyC = require('./strategies/c');
 //get a list of input files from the commandline
 //find . -type f
@@ -16,9 +16,13 @@ let session = process.argv[2].substring(startIndex, endIndex);
 let leg = session.substring(0, 2);
 
 const inFileName = path.basename(process.argv[2]);
-
 const outFileName = `${inFileName.replace('.HTM', '.json')}`;
+const outFilePath = path.join('witnessTestimony', 'JSON', session, outFileName);
 
+// if (fs.existsSync(outFilePath)) {
+//   console.log(`${outFilePath} already processed`);
+//   process.exit();
+// }
 const html = fs
   .readFileSync(path.join('witnessTestimony', 'HTML', process.argv[2]))
   .toString();
@@ -34,6 +38,14 @@ switch (parseInt(leg)) {
   case 79:
     scrape = strategyA.scrape;
     break;
+  case 80:
+  case 81:
+    scrape = strategyB.scrape;
+    break;
+  case 82:
+  case 83:
+  case 84:
+  case 85:
   case 86:
     scrape = strategyC.scrape;
     break;
@@ -41,9 +53,8 @@ switch (parseInt(leg)) {
 
 const records = scrape(html, meeting_cd);
 
-fs.writeFileSync(
-  path.join('witnessTestimony', 'JSON', outFileName),
-  JSON.stringify(records)
-);
+if (!fs.existsSync(path.join('witnessTestimony', 'JSON', session)))
+  fs.mkdirSync(path.join('witnessTestimony', 'JSON', session));
+fs.writeFileSync(outFilePath, JSON.stringify(records));
 
-console.log(`Processed ${inFileName}`);
+console.log(`Processed ${inFileName}: ${records.length} records written.`);
