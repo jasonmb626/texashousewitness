@@ -1,0 +1,24 @@
+# Use postgres/example user/password credentials
+version: '3.8'
+
+services:
+
+  db:
+    image: postgres
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: example
+    volumes:
+      - texashousewitness:/var/lib/postgresql/data
+    stdin_open: true
+    tty: true
+  pgadmin:
+    image: dpage/pgadmin4
+    restart: always
+    environment:
+      PGADMIN_DEFAULT_EMAIL: jason@jasonbrunelle.com
+      PGADMIN_DEFAULT_PASSWORD: example
+    ports:
+      - 8080:80
+volumes:
+  texashousewitness:
