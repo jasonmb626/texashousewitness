@@ -13,6 +13,8 @@
 const fs = require('fs');
 const fetch = require('node-fetch');
 const jsdom = require('jsdom')
+
+const {insertSession} = require('./db');
 const pool = require('../dbPool');
 
 const { JSDOM } = jsdom;
@@ -26,12 +28,21 @@ const { JSDOM } = jsdom;
 	const dom = new JSDOM(html).window.document;
 	const cboLegSess = dom.getElementById('cboLegSess');
 	const options = cboLegSess.getElementsByTagName('option');
-	Array.from(options).forEach(option => {
+	Array.from(options).forEach(async option => {
 		const textContent = option.textContent;
 		const leg = textContent.slice(0, 2);
 		const session = textContent.slice(3,4);
 		const year = textContent.slice(-4);
-		console.log (leg, session, year);
-		//TODO: Insert into database
+		try {
+			console.log(`Inserting session ${leg}, ${session}, ${year}`);
+			await insertSession(leg, session, year);
+			console.log(`Inserted session ${leg}, ${session}, ${year}`);
+		} catch (err) {
+			if (err.code == '23505') {
+				console.log(`Session ${leg}, ${session}, ${year} already exists`);
+			} else {
+				console.error(err);
+			}
+		}
 	});
-})();
+})()
