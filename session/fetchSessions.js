@@ -35,7 +35,8 @@ const insertPromises = [];
 		const leg = textContent.slice(0, 2);
 		const session = textContent.slice(3,4);
 		const year = textContent.slice(-4);
-		insertPromises.push(insertSession(leg, session, year));
+		if (leg >= 75) //The data before 75th is unreliable or missing
+			insertPromises.push(insertSession(leg, session, year));
 	});
 	await Promise.all(insertPromises);
 })().finally(() => pool.end());

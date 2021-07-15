@@ -45,20 +45,6 @@ for (let i = 75; i <= 86; i++) {
 
 console.log(representations);
 
-function decodeLegislatures(instr) {
-  const legislatureRanges = instr.split('\t');
-  const legislatures = [];
-  legislatureRanges.forEach(range => {
-    if (range != '') {
-      const legislaturesStr = range.trim().split('\n');
-      const start = parseInt(legislaturesStr[0].trim().slice(0, 2));
-      const ends = legislaturesStr[legislaturesStr.length-1].trim().split('-');
-      const end = parseInt(ends[ends.length-1].trim().slice(0,2));
-      legislatures.push({start, end});
-    }
-  })
-  return legislatures;
-}
 
 /* create a new blank workbook */
 const wb = XLSX.utils.book_new();

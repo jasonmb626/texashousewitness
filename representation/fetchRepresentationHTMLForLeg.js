@@ -9,19 +9,47 @@ const path = require('path');
 
 const fetch = require('node-fetch');
 
-const {getLegWithNoMembers, insertMemberHTMLFile} = require('./db');
+const pool = require('../dbPool');
+const {getLegWithNoRepresentation, getLatestLeg} = require('./db');
 
+let force;
+
+if (process.argv[3] == 'force') {
+	force = true;
+} else {
+	force = false;
+}
 (async () => {
-	const emptyLeg = await getLegWithNoMembers();
+	console.log ('Running fetchRepresentationHTMLForLeg.');
+	let legToProcess;
+
+	if (process.argv[2]) {
+		console.log ('Selecting leg based on commandline arg.');
+		legToProcess = process.argv[2];
+	} else {
+		const emptyLeg = await getLegWithNoRepresentation();
+		if (emptyLeg) { 
+			console.log ('Selecting leg based on existence of empty leg.');
+			legToProcess = emptyLeg
+		}
+		else {
+			console.log ('Selecting latest leg.');
+			legToProcess = await getLatestLeg();
+		}
+	}
 	
-	if (!fs.existsSync(path.join('HTML', `${emptyLeg}.html`)))
+	console.log (`Selected leg: ${legToProcess}`);
+	console.log ('Force? = ' + force);
+	const filename = path.join('HTML', legToProcess + '.html');
+	if (!fs.existsSync(filename) || force)
 	{
+		console.log('Fetching representation data for leg: ' + legToProcess);
 		//The "form" data, only searching by leg
 		let form = {
 			"last": "",
 			"first": "",
 			"gender": "",
-			"leg": emptyLeg,
+			"leg": legToProcess,
 			"chamber": "",
 			"district": "",
 			"party": "",
@@ -54,13 +82,19 @@ const {getLegWithNoMembers, insertMemberHTMLFile} = require('./db');
 			},
 			body: new URLSearchParams(form)
 		}).then(res => res.text()).then(html => {
+			console.log('Feched representation data for leg: ' + legToProcess);
 			try {
-				const filename = emptyLeg + '.html';
+				console.log('Writing representation data for leg: ' + legToProcess + ' to file ' + filename);
 				fs.writeFileSync(filename, html);
-				insertMemberHTMLFile(emptyLeg, filename);
+				console.log('Wrote representation data for leg: ' + legToProcess + ' to file ' + filename);
 			} catch (err) {
 
 			}
 		}).catch(err => console.error(err));
+	} else {
+		console.log('Skipped fetch of representation data for leg: ' + legToProcess);
 	}
-})();
+})().finally(() =>	{
+	pool.end();
+	console.log ('Ran fetchRepresentationHTMLForLeg.');}
+);
