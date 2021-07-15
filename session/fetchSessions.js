@@ -19,6 +19,8 @@ const pool = require('../dbPool');
 
 const { JSDOM } = jsdom;
 
+const insertPromises = [];
+
 (async () => {
 	const res = await fetch(
 		'https://capitol.texas.gov'
@@ -33,16 +35,7 @@ const { JSDOM } = jsdom;
 		const leg = textContent.slice(0, 2);
 		const session = textContent.slice(3,4);
 		const year = textContent.slice(-4);
-		try {
-			console.log(`Inserting session ${leg}, ${session}, ${year}`);
-			await insertSession(leg, session, year);
-			console.log(`Inserted session ${leg}, ${session}, ${year}`);
-		} catch (err) {
-			if (err.code == '23505') {
-				console.log(`Session ${leg}, ${session}, ${year} already exists`);
-			} else {
-				console.error(err);
-			}
-		}
+		insertPromises.push(insertSession(leg, session, year));
 	});
-})()
+	await Promise.all(insertPromises);
+})().finally(() => pool.end());

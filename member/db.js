@@ -33,25 +33,8 @@ const insertMemberHTMLFile = function (leg, filename) {
 	});
 }
 
-const get1UnprocessedLegHTML = function () {
-	return new Promise (async (resolve, reject) => {
-		const client = await pool.connect();
-		try {
-			let res = await client.query(`
-				SELECT filename FROM members_html_files
-				WHERE processed=false LIMIT 1;
-			`);
-			resolve(res.rows[0].filename);
-		} catch (err) {
-			reject(err);
-		} finally {
-			client.release();
-		}
-	});
-}
-
 module.exports = {
 	getLegWithNoMembers,
 	insertMemberHTMLFile,
-	get1UnprocessedLegHTML
+	get1UnprocessedLegHTML,
 }
