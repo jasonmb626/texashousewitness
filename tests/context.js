@@ -1,84 +1,72 @@
+const { Pool } = require('pg');
 const { randomBytes } = require('crypto');
 const format = require('pg-format');
+const { getDefaultDBConnObj } = require('../db');
 const { default: migrate } = require('node-pg-migrate');
-const pool = require('../pool');
 
-const DEFAULT_OPTS = {
+const DEFAULT_OPTS = getDefaultDBConnObj();
+
+const ROOT_OPTS = {
+  ...DEFAULT_OPTS,
   database: 'texashousewitness-test',
 };
 
 class Context {
+  pool = null;
+  roleName = null;
+
   static async build() {
-    // Randomly generating a role name to connect to PG as
     const roleName = 'a' + randomBytes(4).toString('hex');
+    let pool = new Pool(ROOT_OPTS);
 
-    // Connect to PG as usual
-    await pool.connect(DEFAULT_OPTS);
-
-    // Create a new role
     await pool.query(
       format('CREATE ROLE %I WITH LOGIN PASSWORD %L;', roleName, roleName)
     );
 
-    // Create a schema with the same name
     await pool.query(
       format('CREATE SCHEMA %I AUTHORIZATION %I;', roleName, roleName)
     );
 
-    // Disconnect entirely from PG
-    await pool.close();
+    await pool.end();
 
-    // Run our migrations in the new schema
+    const ROLE_OPTS = {
+      host: process.env['PGHOST'],
+      port: process.env['PGPORT'],
+      user: roleName,
+      password: roleName,
+      database: 'texashousewitness-test',
+    };
+
     await migrate({
       schema: roleName,
       direction: 'up',
       log: () => {},
       noLock: true,
       dir: 'migrations',
-      databaseUrl: {
-        host: 'localhost',
-        port: 5432,
-        database: 'socialnetwork-test',
-        user: roleName,
-        password: roleName,
-      },
+      databaseUrl: ROLE_OPTS,
     });
 
-    // Connect to PG as the newly created role
-    await pool.connect({
-      host: 'localhost',
-      port: 5432,
-      database: 'socialnetwork-test',
-      user: roleName,
-      password: roleName,
-    });
+    pool = new Pool(ROLE_OPTS);
 
-    return new Context(roleName);
+    return new Context(roleName, pool);
   }
 
-  constructor(roleName) {
+  constructor(roleName, pool) {
     this.roleName = roleName;
+    this.pool = pool;
   }
 
-  async reset() {
-    return pool.query(`
-      DELETE FROM users;
-    `);
-  }
+  async end() {
+    await this.pool.end();
 
-  async close() {
-    // Disconnect from PG
-    await pool.close();
-
-    // Reconnect as our root user
-    await pool.connect(DEFAULT_OPTS);
+    const rootPool = new Pool(ROOT_OPTS);
 
     // Delete the role and schema we created
-    await pool.query(format('DROP SCHEMA %I CASCADE;', this.roleName));
-    await pool.query(format('DROP ROLE %I;', this.roleName));
+    await rootPool.query(format('DROP SCHEMA %I CASCADE;', this.roleName));
+    await rootPool.query(format('DROP ROLE %I;', this.roleName));
 
     // Disconnect
-    await pool.close();
+    await rootPool.end();
   }
 }
 
