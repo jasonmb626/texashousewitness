@@ -49,33 +49,34 @@ const getLatestLeg = function (pool) {
   });
 };
 
-const insertWork_RepresentationRecord = function (
+const insertWork_RepresentationRecords = async function (pool, reps) {
+  const insertPromises = [];
+  reps.forEach((rep) => {
+    insertPromises.push(insertWork_RepresentationRecord(pool, rep));
+  });
+  await Promise.all(insertPromises);
+};
+
+const insertWork_RepresentationRecord = async function (
   pool,
-  leg,
-  scrapedName,
-  URL,
-  district,
-  chamber,
-  party,
-  city,
-  county
+  { leg, scrapedName, URL, district, chamber, party, city, county }
 ) {
   return new Promise(async (resolve, reject) => {
     const client = await pool.connect();
     try {
-      console.log(
-        `Inserting (${leg}, ${scrapedName}, ${URL}, ${district}, ${chamber}, ${party}, ${city}, ${county}) into work.representation.`
-      );
+      // console.log(
+      //   `Inserting (${leg}, ${scrapedName}, ${URL}, ${district}, ${chamber}, ${party}, ${city}, ${county}) into w_representation.`
+      // );
       await client.query(
         `
-				INSERT INTO work.representation (leg, scraped_name, URL, district, chamber, party, city, county)
+				INSERT INTO w_representation (leg, scraped_name, URL, district, chamber, party, city, county)
 				VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *;
 			`,
         [leg, scrapedName, URL, district, chamber, party, city, county]
       );
-      console.log(
-        `Inserted (${leg}, ${scrapedName}, ${district}, ${chamber}, ${party}, ${city}, ${county}) into work.representation.`
-      );
+      // console.log(
+      //   `Inserted (${leg}, ${scrapedName}, ${district}, ${chamber}, ${party}, ${city}, ${county}) into w_representation.`
+      // );
       resolve();
     } catch (err) {
       console.error(err);
@@ -140,7 +141,7 @@ const getAllLegs = function (pool) {
 
 module.exports = {
   get1UnprocessedLegHTMLFilename,
-  insertWork_RepresentationRecord,
+  insertWork_RepresentationRecords,
   getLegWithNoRepresentation,
   getLatestLeg,
   getLegsWithNoRepresentation,
