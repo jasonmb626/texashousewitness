@@ -9,8 +9,7 @@ const path = require('path');
 
 const fetch = require('node-fetch');
 
-const { pool } = require('../db');
-
+const pool = require('../dbPool');
 const { getLegWithNoRepresentation, getLatestLeg } = require('./db');
 
 let force;

@@ -1,3 +1,5 @@
+const { Pool } = require('pg');
+
 function getDefaultDBConnObj() {
   return {
     host: process.env['PGHOST'],
@@ -8,4 +10,6 @@ function getDefaultDBConnObj() {
   };
 }
 
-module.exports = { getDefaultDBConnObj };
+const pool = new Pool(getDefaultDBConnObj());
+
+module.exports = { pool, getDefaultDBConnObj };

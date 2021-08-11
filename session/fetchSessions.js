@@ -1,5 +1,4 @@
-const { Pool } = require('pg');
-const { getDefaultDBConnObj } = require('../db');
+const { pool } = require('../db');
 
 const {
   getSessionHTML,
@@ -11,7 +10,6 @@ const {
   try {
     const html = await getSessionHTML();
     const sessions = parseSessionHTML(html);
-    pool = new Pool(getDefaultDBConnObj());
     await insertSessionsToDB(sessions, pool);
   } catch (err) {
     console.error(err);
