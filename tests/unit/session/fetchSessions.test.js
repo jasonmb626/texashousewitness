@@ -1,21 +1,21 @@
 const fs = require('fs');
 const path = require('path');
-const sessionsMatch = require('./sessions.json');
 const {
   getSessionHTML,
   parseSessionHTML,
 } = require('../../../session/fetchSessionsHelpers');
 
-function getDBConnObj() {
-  return {
-    host: process.env['PGHOST'],
-    port: process.env['PGPORT'],
-    user: this.roleName,
-    password: this.roleName,
-    database: 'texashousewitness-test',
-  };
-}
+const {
+  getHTMLDataForLeg,
+} = require('../../../representation/fetchRepresentationHTMLForLegHelpers');
 
+const sessionsMatch = require('../session/sessions.json');
+
+it.skip('Fetches HTML data for given legislature', async () => {
+  const html = await getHTMLDataForLeg(75);
+  // const filename = path.join(__dirname, '75.html');
+  // fs.writeFileSync('75.html', html);
+});
 it('Downloads session HTML', async () => {
   const html = await getSessionHTML();
   expect(html).toMatch(/Search Legislation/);

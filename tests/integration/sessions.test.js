@@ -1,5 +1,3 @@
-const { Pool } = require('pg');
-
 const Context = require('../context');
 
 const { insertSessionsToDB } = require('../../session/fetchSessionsHelpers');

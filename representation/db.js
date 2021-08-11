@@ -2,17 +2,17 @@ const getLegsWithNoRepresentation = function (pool) {
   return new Promise(async (resolve, reject) => {
     const client = await pool.connect();
     try {
-      console.log('Fetching rows with no representation');
+      // console.log('Fetching rows with no representation');
       let res = await client.query(`
 				SELECT s.leg as sleg, r.leg as rleg 
 				FROM session AS s LEFT JOIN representation r on r.leg=s.leg and r.session=s.session 
 				WHERE r.leg IS NULL ORDER BY s.leg;
 			`);
-      console.log('Results:');
-      console.log(res.rows);
+      // console.log('Results:');
+      // console.log(res.rows);
       const transformedResults = res.rows.map((row) => row.sleg);
-      console.log('Tranformed results:');
-      console.log(transformedResults);
+      // console.log('Tranformed results:');
+      // console.log(transformedResults);
       resolve(transformedResults);
     } catch (err) {
       reject(err);
