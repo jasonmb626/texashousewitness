@@ -1,12 +1,7 @@
 const { pool } = require('../db');
 
-const {
-  getSessionHTML,
-  insertSessionsToDB,
-  parseSessionHTML,
-} = require('./fetchSessionsHelpers');
-
-(async () => {
+async function fetchSessions() {
+  console.log('Fetching Sessions');
   try {
     const html = await getSessionHTML();
     const sessions = parseSessionHTML(html);
@@ -16,4 +11,6 @@ const {
   } finally {
     await pool.end();
   }
-})();
+}
+
+fetchSessions();

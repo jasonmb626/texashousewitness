@@ -1,23 +1,6 @@
-/*
- * This script loops through each session from 75 (the first session with reliable data
- * to (86). Makes a post request to Texas Legislatrure online by session & writes
- * out the html document to 75.html, 76.html etc. by legislature.
- *
- * HTML contains committee names and links to obtain HTML that has all committee meetings
- * for that committee.
- *
- * Parsing of those docs done elsewhere.
- *
- */
-const fs = require('fs');
 const fetch = require('node-fetch');
-const jsdom = require('jsdom');
-
+const { JSDOM } = require('jsdom');
 const { insertSession } = require('./db');
-
-const { JSDOM } = jsdom;
-
-let pool = null;
 
 async function getSessionHTML() {
   const res = await fetch('https://capitol.texas.gov');
@@ -49,4 +32,8 @@ async function insertSessionsToDB(sessions, pool) {
   await Promise.all(insertPromises);
 }
 
-module.exports = { insertSessionsToDB, getSessionHTML, parseSessionHTML };
+module.exports = {
+  insertSessionsToDB,
+  getSessionHTML,
+  parseSessionHTML,
+};

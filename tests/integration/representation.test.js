@@ -1,6 +1,6 @@
 const Context = require('../context');
 const { insertWork_RepresentationRecords } = require('../../representation/db');
-const reps = require('../unit/representation/75reps.json');
+const reps = require('../../representation/75reps.json');
 
 let client = null;
 let context = null;

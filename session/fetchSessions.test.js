@@ -1,15 +1,12 @@
 const fs = require('fs');
 const path = require('path');
-const {
-  getSessionHTML,
-  parseSessionHTML,
-} = require('../../../session/fetchSessionsHelpers');
+const { getSessionHTML, parseSessionHTML } = require('./fetchSessionsHelpers');
 
 const {
   getHTMLDataForLeg,
-} = require('../../../representation/fetchRepresentationHTMLForLegHelpers');
+} = require('../representation/fetchRepresentationHTMLForLegHelpers');
 
-const sessionsMatch = require('../session/sessions.json');
+const sessionsMatch = require('./sessions.json');
 
 it.skip('Fetches HTML data for given legislature', async () => {
   const html = await getHTMLDataForLeg(75);

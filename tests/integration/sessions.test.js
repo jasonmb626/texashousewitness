@@ -2,7 +2,7 @@ const Context = require('../context');
 
 const { insertSessionsToDB } = require('../../session/fetchSessionsHelpers');
 const { getLegWithNoRepresentation } = require('../../representation/db');
-const sessionsMatch = require('../unit/session/sessions.json');
+const sessionsMatch = require('../../session/sessions.json');
 
 let client = null;
 let context = null;
