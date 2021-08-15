@@ -1,8 +1,13 @@
 const Context = require('../context');
 const { insertWork_RepresentationRecords } = require('../../representation/db');
 const reps = require('../../representation/75reps.json');
+const { insertSessions } = require('./shared');
 
-let client = null;
+const {
+  getLegWithNoRepresentation,
+  getAllWorkReps,
+} = require('../../representation/db');
+
 let context = null;
 
 beforeAll(async () => {
@@ -12,21 +17,15 @@ beforeAll(async () => {
 afterAll(async () => {
   return context.end();
 });
-
-beforeEach(async () => {
-  client = await context.pool.connect();
-});
-
-afterEach(async () => {
-  return client.release();
+it('Retreives earliest session with no representation', async () => {
+  await insertSessions(context);
+  const session = await getLegWithNoRepresentation(context.pool);
+  expect(session).toBe(75);
 });
 
 it('Inserts reps into work representation table', async () => {
   await insertWork_RepresentationRecords(context.pool, reps);
-  const client = await context.pool.connect();
-  const res = await client.query(`
-    SELECT COUNT(*) FROM w_representation
-  `);
-  expect(res.rows[0].count).toBe('185');
-  await client.release();
+  const dbReps = await getAllWorkReps(context.pool);
+  expect(dbReps).toBeDefined();
+  expect(dbReps.length).toBe(185);
 });

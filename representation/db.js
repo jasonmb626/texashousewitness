@@ -87,62 +87,44 @@ const insertWork_RepresentationRecord = async function (
   });
 };
 
-const get1UnprocessedLegHTMLFilename = function (pool) {
-  return new Promise(async (resolve, reject) => {
-    const client = await pool.connect();
-    try {
-      let res = await client.query(`
-				SELECT filename FROM work.leg_html_files
-				WHERE processed=false LIMIT 1;
-			`);
-      resolve(res.rows[0].filename);
-    } catch (err) {
-      reject(err);
-    } finally {
-      client.release();
-    }
-  });
-};
+async function getAllLegs(pool) {
+  try {
+    const res = await pool.query(`
+      SELECT distinct leg 
+      FROM session
+      ORDER BY leg;	
+    `);
+    return res.rows;
+  } catch (err) {
+    console.error(err);
+  }
+}
 
-const getLatestLegHTMLFilename = function (pool) {
-  return new Promise(async (resolve, reject) => {
-    const client = await pool.connect();
-    try {
-      let res = await client.query(`
-				SELECT filename FROM work.leg_html_files
-				WHERE leg = (SELECT MAX leg FROM work.leg_html_files);
-			`);
-      resolve(res.rows[0].filename);
-    } catch (err) {
-      reject(err);
-    } finally {
-      client.release();
-    }
-  });
-};
+async function getAllWorkReps(pool) {
+  try {
+    const res = await pool.query(`
+      SELECT * FROM w_representation;
+    `);
+    return res.rows;
+  } catch (err) {
+    console.error(err);
+  }
+}
 
-const getAllLegs = function (pool) {
-  return new Promise(async (resolve, reject) => {
-    const client = await pool.connect();
-    try {
-      let res = await client.query(`
-				SELECT distinct leg 
-				FROM session
-				ORDER BY leg;	
-			`);
-      resolve(res.rows);
-    } catch (err) {
-      reject(err);
-    } finally {
-      client.release();
-    }
-  });
-};
+async function getUnprocessedRep(pool) {
+  try {
+    const reps = await getAllWorkReps(pool);
+    reps.forEach((rep) => {});
+  } catch (err) {
+    console.error(err);
+  }
+}
 
 module.exports = {
-  get1UnprocessedLegHTMLFilename,
-  insertWork_RepresentationRecords,
-  getLegWithNoRepresentation,
-  getLatestLeg,
+  getAllLegs,
   getLegsWithNoRepresentation,
+  getLegWithNoRepresentation,
+  insertWork_RepresentationRecord,
+  insertWork_RepresentationRecords,
+  getAllWorkReps,
 };

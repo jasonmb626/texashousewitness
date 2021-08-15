@@ -10,7 +10,6 @@ exports.up = (pgm) => {
     sur_name VARCHAR,
     nick_name VARCHAR,
     full_name VARCHAR GENERATED ALWAYS AS (CASE WHEN nick_name = '' OR nick_name IS NULL THEN given_name || ' ' || sur_name ELSE given_name || ' "' || nick_name || '" ' || sur_name END) STORED,
-    scraped_name VARCHAR NOT NULL,
     PRIMARY KEY (member_id)
     );
     
@@ -41,15 +40,10 @@ exports.up = (pgm) => {
       party CHAR(1) NOT NULL,
       city VARCHAR NOT NULL,
       county VARCHAR NOT NULL,
+      processed BOOLEAN NOT NULL DEFAULT false,
       PRIMARY KEY (leg, scraped_name, url, district, chamber, party, city, county)
     );
           
-    CREATE TABLE w_leg_html_files (
-      leg SMALLINT NOT NULL,
-      filename VARCHAR NOT NULL,
-      processed BOOL DEFAULT false NOT NULL,
-      PRIMARY KEY (leg, filename)
-    );
   `);
 };
 
@@ -59,6 +53,5 @@ exports.down = (pgm) => {
     DROP TABLE session;
     DROP TABLE representation;
     DROP TABLE w_representation;
-    DROP TABLE w_leg_html_files;
   `);
 };

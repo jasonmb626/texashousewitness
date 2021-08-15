@@ -62,8 +62,8 @@ class Context {
     const rootPool = new Pool(ROOT_OPTS);
 
     // Delete the role and schema we created
-    await rootPool.query(format('DROP SCHEMA %I CASCADE;', this.roleName));
-    await rootPool.query(format('DROP ROLE %I;', this.roleName));
+    // await rootPool.query(format('DROP SCHEMA %I CASCADE;', this.roleName));
+    // await rootPool.query(format('DROP ROLE %I;', this.roleName));
 
     // Disconnect
     await rootPool.end();

@@ -1,15 +1,6 @@
-const fs = require('fs');
-const path = require('path');
-
 const jsdom = require('jsdom');
 
 const { JSDOM } = jsdom;
-
-const {
-  pool,
-  getLegsWithNoRepresentation,
-  insertWork_RepresentationRecord,
-} = require('./db');
 
 function processLegHTMLtoJSObj(leg, html) {
   const reps = [];
