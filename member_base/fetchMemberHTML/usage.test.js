@@ -1,4 +1,4 @@
-const Context = require('../context');
+const Context = require('../../tests/context');
 const { getUnprocessedRep } = require('../../representation/db');
 
 let context = null;

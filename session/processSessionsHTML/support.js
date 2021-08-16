@@ -1,11 +1,5 @@
-const fetch = require('node-fetch');
 const { JSDOM } = require('jsdom');
-const { insertSession } = require('./db');
-
-async function getSessionHTML() {
-  const res = await fetch('https://capitol.texas.gov');
-  return await res.text();
-}
+const { insertSession } = require('../db');
 
 function parseSessionHTML(html) {
   const sessions = [];
@@ -34,6 +28,5 @@ async function insertSessionsToDB(sessions, pool) {
 
 module.exports = {
   insertSessionsToDB,
-  getSessionHTML,
   parseSessionHTML,
 };

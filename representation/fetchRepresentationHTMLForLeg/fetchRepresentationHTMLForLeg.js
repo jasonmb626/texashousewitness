@@ -7,11 +7,13 @@
 const fs = require('fs');
 const path = require('path');
 
-const { getHTMLDataForLeg } = require('./fetchRepresentationHTMLForLegHelpers');
+const {
+  getHTMLDataForLeg,
+} = require('./fetchRepresentationHTMLForLeg.support');
 
-const { pool } = require('../db');
+const { pool } = require('../../db');
 
-const { getLegWithNoRepresentation, getLatestLeg } = require('./db');
+const { getLegWithNoRepresentation, getLatestLeg } = require('../db');
 
 let force;
 

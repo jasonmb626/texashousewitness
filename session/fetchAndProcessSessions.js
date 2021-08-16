@@ -1,4 +1,9 @@
 const { pool } = require('../db');
+const { getSessionHTML } = require('./fetchSessions/support');
+const {
+  parseSessionHTML,
+  insertSessionsToDB,
+} = require('./processSessionsHTML/support');
 
 async function fetchSessions() {
   console.log('Fetching Sessions');

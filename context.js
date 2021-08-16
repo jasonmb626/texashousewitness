@@ -1,7 +1,7 @@
 const { Pool } = require('pg');
 const { randomBytes } = require('crypto');
 const format = require('pg-format');
-const { getDefaultDBConnObj } = require('../db');
+const { getDefaultDBConnObj } = require('./db');
 const { default: migrate } = require('node-pg-migrate');
 
 const DEFAULT_OPTS = getDefaultDBConnObj();
@@ -62,8 +62,8 @@ class Context {
     const rootPool = new Pool(ROOT_OPTS);
 
     // Delete the role and schema we created
-    // await rootPool.query(format('DROP SCHEMA %I CASCADE;', this.roleName));
-    // await rootPool.query(format('DROP ROLE %I;', this.roleName));
+    await rootPool.query(format('DROP SCHEMA %I CASCADE;', this.roleName));
+    await rootPool.query(format('DROP ROLE %I;', this.roleName));
 
     // Disconnect
     await rootPool.end();

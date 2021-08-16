@@ -1,7 +1,7 @@
 const {
   getMemberIDFromMemberURL,
   wasMemberHTMLFetched,
-} = require('./fetchMemberHTMLHelpers');
+} = require('./support.');
 it('Correctly gets memberId from member URL', () => {
   const memberId = getMemberIDFromMemberURL(
     'memberDisplay.cfm?memberID=281&searchparams=chamber=~city=~countyID=0~RcountyID=~district=~first=~gender=~last=~leaderNote=~leg=75~party=~roleDesc=~Committee='

@@ -1,6 +1,6 @@
-const Context = require('../context');
+const Context = require('../../context');
 
-const { insertSessions } = require('./shared');
+const { insertSessions } = require('../../test-shared');
 
 let context = null;
 
@@ -13,7 +13,7 @@ afterAll(async () => {
 });
 
 it('Inserts sessions into database', async () => {
-  await insertSessions(context);
+  await insertSessions(context.pool);
   const res = await context.pool.query('SELECT COUNT(*) FROM session');
   expect(res.rows[0].count).toBe('28');
 });

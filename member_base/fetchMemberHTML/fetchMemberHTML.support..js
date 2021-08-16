@@ -12,7 +12,7 @@ function getMemberIDFromMemberURL(url) {
 function wasMemberHTMLFetched(memberId) {
   const base = 'memberDisplay.cfm?memberID=';
   const baseFilename = base + memberId;
-  const filename = path.join(__dirname, 'HTML', baseFilename);
+  const filename = path.join(__dirname, '..', 'HTML', baseFilename);
   return fs.existsSync(filename);
 }
 
