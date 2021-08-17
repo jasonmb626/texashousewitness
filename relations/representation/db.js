@@ -111,15 +111,6 @@ async function getAllWorkReps(pool) {
   }
 }
 
-async function getUnprocessedRep(pool) {
-  try {
-    const reps = await getAllWorkReps(pool);
-    reps.forEach((rep) => {});
-  } catch (err) {
-    console.error(err);
-  }
-}
-
 module.exports = {
   getAllLegs,
   getLegsWithNoRepresentation,
