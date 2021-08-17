@@ -10,6 +10,7 @@ function getMemberIDFromMemberURL(url) {
   const memberId = +url.slice(start, end);
   return memberId;
 }
+
 function wasMemberHTMLFetched(memberId) {
   const base = 'memberDisplay.cfm?memberID=';
   const baseFilename = base + memberId;

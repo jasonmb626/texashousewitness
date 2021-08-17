@@ -1,6 +1,6 @@
 const fetch = require('node-fetch');
 
-async function getHTMLDataForLeg(legToProcess) {
+async function getRepHTMLDataForLeg(legToProcess) {
   const headers = {
     //headers copied from browser "raw" data. Below vim macro used to turn it into js-compatible header object
     //^i't:a'wi'g_a',j
@@ -54,4 +54,4 @@ async function getHTMLDataForLeg(legToProcess) {
   }
 }
 
-module.exports = { getHTMLDataForLeg };
+module.exports = { getRepHTMLDataForLeg };

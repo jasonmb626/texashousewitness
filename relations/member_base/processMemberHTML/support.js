@@ -1,5 +1,27 @@
+const { JSDOM } = require('jsdom');
+const { getMemberIDFromMemberURL } = require('../fetchMemberHTML/support');
+
 function parseMemberHTML(html) {
   const dom = new JSDOM(html).window.document;
+
+  let memberFullNameEl = dom.querySelector(
+    '.body2ndLevel > p:nth-child(2) > table:nth-child(2) > tbody:nth-child(1) > tr:nth-child(1) > td:nth-child(1) > table:nth-child(1) > tbody:nth-child(1) > tr:nth-child(1) > td:nth-child(2) > span:nth-child(1)'
+  );
+
+  if (!memberFullNameEl) {
+    memberFullNameEl = dom.querySelector(
+      '.body2ndLevel > p:nth-child(3) > table:nth-child(2) > tbody:nth-child(1) > tr:nth-child(1) > td:nth-child(1) > table:nth-child(1) > tbody:nth-child(1) > tr:nth-child(1) > td:nth-child(2) > span:nth-child(1)'
+    );
+  }
+
+  const memberFullName = memberFullNameEl.textContent;
+
+  const memberLinkEl = dom.querySelector(
+    '.body2ndLevel > p:nth-child(2) > table:nth-child(2) > tbody:nth-child(1) > tr:nth-child(1) > td:nth-child(1) > table:nth-child(1) > tbody:nth-child(1) > tr:nth-child(1) > td:nth-child(3) > ul:nth-child(1) > li:nth-child(4) > a:nth-child(1)'
+  );
+
+  const memberLink = memberLinkEl.getAttribute('href');
+  const memberId = getMemberIDFromMemberURL(memberLink);
 
   let revisedMemberName = memberFullName;
   let nickName = '';
@@ -34,14 +56,14 @@ function parseMemberHTML(html) {
     givenName = splitName[0];
     surName = splitName[1];
   }
-  memberGivenNames.push({
+  member = {
     memberId,
     givenName,
     nickName,
-  });
+    surnames: [],
+  };
 
-  memberSurNames.push({
-    memberId,
+  member.surnames.push({
     surName,
     current: true,
   });
@@ -61,14 +83,14 @@ function parseMemberHTML(html) {
   if (otherSurnames != '') {
     otherSurnames.split(',').forEach((name) => {
       if (name.trim() !== '') {
-        memberSurNames.push({
-          memberId,
+        member.surnames.push({
           surname: name.trim(),
           current: false,
         });
       }
     });
   }
+  return member;
 }
 
 module.exports = { parseMemberHTML };
