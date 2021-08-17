@@ -1,5 +1,7 @@
-const { insertSessionsToDB } = require('./session/processSessionsHTML/support');
-const sessionsMatch = require('./session/testData/sessions.json');
+const {
+  insertSessionsToDB,
+} = require('./relations/session/processSessionsHTML/support');
+const sessionsMatch = require('./relations/session/testData/sessions.json');
 
 async function insertSessions(pool) {
   await pool.query('DELETE FROM session');
