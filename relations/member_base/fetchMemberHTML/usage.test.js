@@ -1,5 +1,5 @@
-const Context = require('../../tests/context');
-const { getUnprocessedRep } = require('../../representation/db');
+const Context = require('../../../context');
+const { getMissingMemberBaseFromWorkRep } = require('../db');
 
 let context = null;
 
@@ -12,5 +12,5 @@ afterAll(async () => {
 });
 
 it('Successfully identifies first rep whose member data has not been processed', async () => {
-  getUnprocessedRep();
+  getMissingMemberBaseFromWorkRep();
 });

@@ -1,6 +1,6 @@
-const Context = require('../../context');
+const Context = require('../../../context');
 
-const { insertSessions } = require('../../test-shared');
+const { insertSessions } = require('../../../test-shared');
 
 let context = null;
 

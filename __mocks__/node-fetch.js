@@ -4,6 +4,7 @@ const path = require('path');
 const filepath = path.join(
   __dirname,
   '..',
+  'relations',
   'session',
   'testData',
   'index.html'

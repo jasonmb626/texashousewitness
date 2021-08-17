@@ -1,4 +1,4 @@
-const { pool } = require('../db');
+const { pool } = require('../../db');
 const { getSessionHTML } = require('./fetchSessions/support');
 const {
   parseSessionHTML,

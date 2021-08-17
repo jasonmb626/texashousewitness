@@ -1,7 +1,7 @@
-const Context = require('../../context');
+const Context = require('../../../context');
 const { insertWork_RepresentationRecords } = require('../db');
 const reps = require('../testData/75reps.json');
-const { insertSessions } = require('../../test-shared');
+const { insertSessions } = require('../../../test-shared');
 
 const { getLegWithNoRepresentation, getAllWorkReps } = require('../db');
 
