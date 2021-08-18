@@ -29,7 +29,6 @@ it('Correctly inserts member into database', async () => {
   };
   await insertMember(context.pool, memberMatch);
 });
-
 it('Correctly identifies member ids to be processed.', async () => {
   await insertWork_RepresentationRecords(context.pool, repsMatch);
   const reps = await getRepMemberIDsToProcess(context.pool);
