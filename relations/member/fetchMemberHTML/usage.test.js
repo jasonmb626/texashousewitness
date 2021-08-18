@@ -1,7 +1,6 @@
 const Context = require('../../../context');
 const { getUnprocessedMembersFromWorkReps } = require('../db');
 const { insertWork_RepresentationRecords } = require('./testDependencies');
-const { fetchMemberHTML } = require('./support');
 const reps = require('../testData/75reps.json');
 
 let context = null;
@@ -20,6 +19,7 @@ it('Successfully identifies first rep whose member data has not been processed',
     scraped_name: 'Dennis Bonnen',
     url:
       'memberDisplay.cfm?memberID=101&searchparams=chamber=~city=~countyID=0~RcountyID=~district=~first=~gender=~last=~leaderNote=~leg=75~party=~roleDesc=~Committee=',
+    member_id: 101,
     district: 25,
     chamber: 'H',
     party: 'R',

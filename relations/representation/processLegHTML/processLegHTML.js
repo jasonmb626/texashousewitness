@@ -10,6 +10,9 @@ const {
   getLegsWithNoRepresentation,
   insertWork_RepresentationRecord,
 } = require('../db');
+const {
+  getMemberIDFromMemberURL,
+} = require('../../member/fetchMemberHTML/support');
 
 const dbInserts = [];
 
@@ -27,6 +30,7 @@ const dbInserts = [];
           const columns = row.getElementsByTagName('td');
           const scrapedName = columns[0].children[0].textContent;
           const URL = columns[0].children[0].getAttribute('href');
+          const memberId = getMemberIDFromMemberURL(URL);
           const district = columns[2].textContent.trim();
           const chambers = columns[3].textContent.trim();
           const legislatures = columns[5].textContent.trim();
@@ -39,13 +43,14 @@ const dbInserts = [];
           const chamber = chambers.split('\n')[index].trim();
           const party = parties.split('\n')[index].trim();
           console.log(
-            `Adding promise to array to insert (${leg}, ${scrapedName}, ${URL}, ${district}, ${chamber}, ${party}, ${city}, ${county})`
+            `Adding promise to array to insert (${leg}, ${scrapedName}, ${URL}, ${memberId}, ${district}, ${chamber}, ${party}, ${city}, ${county})`
           );
           dbInserts.push(
             insertWork_RepresentationRecord(
               leg,
               scrapedName,
               URL,
+              memberId,
               district,
               chamber,
               party,

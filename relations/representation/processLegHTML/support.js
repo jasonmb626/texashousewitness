@@ -2,6 +2,15 @@ const jsdom = require('jsdom');
 
 const { JSDOM } = jsdom;
 
+function getMemberIDFromMemberURL(url) {
+  const searchStr = 'memberID=';
+  const start = url.indexOf(searchStr) + searchStr.length;
+  let end = url.indexOf('&', start);
+  if (end === -1) end = url.length;
+  const memberId = +url.slice(start, end);
+  return memberId;
+}
+
 function processLegHTMLtoJSObj(leg, html) {
   const reps = [];
   const dom = new JSDOM(html).window.document;
@@ -12,6 +21,7 @@ function processLegHTMLtoJSObj(leg, html) {
       const columns = row.getElementsByTagName('td');
       const scrapedName = columns[0].children[0].textContent;
       const URL = columns[0].children[0].getAttribute('href');
+      const memberId = getMemberIDFromMemberURL(URL);
       const district = columns[2].textContent.trim();
       const chambers = columns[3].textContent.trim();
       const legislatures = columns[5].textContent.trim();
@@ -27,6 +37,7 @@ function processLegHTMLtoJSObj(leg, html) {
         leg,
         scrapedName,
         URL,
+        memberId,
         district,
         chamber,
         party,
@@ -55,4 +66,8 @@ function decodeLegislatures(instr) {
   return legislatures;
 }
 
-module.exports = { processLegHTMLtoJSObj, decodeLegislatures };
+module.exports = {
+  processLegHTMLtoJSObj,
+  decodeLegislatures,
+  getMemberIDFromMemberURL,
+};

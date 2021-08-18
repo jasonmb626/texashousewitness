@@ -51,6 +51,7 @@ exports.up = (pgm) => {
       leg SMALLINT NOT NULL,
       scraped_name VARCHAR NOT NULL,
       url VARCHAR NOT NULL,
+      member_id INT NOT NULL,
       district SMALLINT NOT NULL,
       chamber CHAR(1) NOT NULL,
       party CHAR(1) NOT NULL,

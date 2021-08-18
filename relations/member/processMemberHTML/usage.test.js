@@ -23,3 +23,5 @@ it('Correctly inserts member into database', async () => {
   };
   await insertMember(context.pool, memberMatch);
 });
+
+it('Correctly identifies member id to be processed.', async () => {});

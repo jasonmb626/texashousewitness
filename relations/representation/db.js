@@ -59,7 +59,7 @@ const insertWork_RepresentationRecords = async function (pool, reps) {
 
 const insertWork_RepresentationRecord = async function (
   pool,
-  { leg, scrapedName, URL, district, chamber, party, city, county }
+  { leg, scrapedName, URL, memberId, district, chamber, party, city, county }
 ) {
   return new Promise(async (resolve, reject) => {
     const client = await pool.connect();
@@ -69,10 +69,20 @@ const insertWork_RepresentationRecord = async function (
       // );
       await client.query(
         `
-				INSERT INTO w_representation (leg, scraped_name, URL, district, chamber, party, city, county)
-				VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *;
+				INSERT INTO w_representation (leg, scraped_name, URL, member_id, district, chamber, party, city, county)
+				VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING *;
 			`,
-        [leg, scrapedName, URL, district, chamber, party, city, county]
+        [
+          leg,
+          scrapedName,
+          URL,
+          memberId,
+          district,
+          chamber,
+          party,
+          city,
+          county,
+        ]
       );
       // console.log(
       //   `Inserted (${leg}, ${scrapedName}, ${district}, ${chamber}, ${party}, ${city}, ${county}) into w_representation.`

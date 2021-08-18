@@ -1,5 +1,5 @@
 const { JSDOM } = require('jsdom');
-const { getMemberIDFromMemberURL } = require('../fetchMemberHTML/support');
+const { getMemberIDFromMemberURL } = require('../dependencies');
 
 function parseMemberHTML(html) {
   const dom = new JSDOM(html).window.document;
