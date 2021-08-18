@@ -1,6 +1,5 @@
 const fs = require('fs');
 const path = require('path');
-const { hasUncaughtExceptionCaptureCallback } = require('process');
 
 const { parseMemberHTML } = require('./support');
 it('Correctly parses member HTML to JS Obj', () => {
@@ -8,10 +7,10 @@ it('Correctly parses member HTML to JS Obj', () => {
     memberId: 243,
     givenName: 'Senfronia',
     nickName: '',
-    surnames: [
+    surNames: [
       { surName: 'Thompson', current: true },
-      { surname: 'Carrington', current: false },
-      { surname: 'Paige', current: false },
+      { surName: 'Carrington', current: false },
+      { surName: 'Paige', current: false },
     ],
   };
   const filename = path.join(

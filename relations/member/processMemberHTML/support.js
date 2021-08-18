@@ -60,10 +60,10 @@ function parseMemberHTML(html) {
     memberId,
     givenName,
     nickName,
-    surnames: [],
+    surNames: [],
   };
 
-  member.surnames.push({
+  member.surNames.push({
     surName,
     current: true,
   });
@@ -83,8 +83,8 @@ function parseMemberHTML(html) {
   if (otherSurnames != '') {
     otherSurnames.split(',').forEach((name) => {
       if (name.trim() !== '') {
-        member.surnames.push({
-          surname: name.trim(),
+        member.surNames.push({
+          surName: name.trim(),
           current: false,
         });
       }
