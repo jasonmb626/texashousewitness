@@ -108,14 +108,5 @@ if (otherSurnames != '') {
 fs.writeFileSync('member_givenNames.json', JSON.stringify(memberGivenNames));
 fs.writeFileSync('member_surNames.json', JSON.stringify(memberSurNames));
 
-function guessSurnameBasedOnStartLetter(fullName, letter) {
-  const splitNames = fullName.split(' ');
-  for (let i = splitNames.length - 1; i >= 0; i--) {
-    if (splitNames[i].slice(0, 1).toUpperCase() === letter.toUpperCase()) {
-      return splitNames.slice(i).join(' ');
-    }
-  }
-  return '';
-}
 // console.log(guessSurnameBasedOnStartLetter('Clyde Alexander', 'A'));
 // console.log(guessSurnameBasedOnStartLetter('Leticia Van de Putte', 'V'));

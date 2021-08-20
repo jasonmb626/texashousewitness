@@ -1,21 +1,13 @@
 {
   "version": "0.2.0",
   "configurations": [
-  
-
-
-
-
-
     {
       "type": "pwa-node",
       "request": "launch",
       "name": "Launch Program",
-      "skipFiles": [
-        "<node_internals>/**"
-      ],
+      "skipFiles": ["<node_internals>/**"],
       "program": "${file}",
-      "args": ["./capitol.texas.gov/tlodocs/84R/witlistmtg/html/C2452015040900001.HTM"],
+      "args": [""],
       "console": "integratedTerminal"
     }
   ]

@@ -1,4 +1,4 @@
-const insertSession = function (pool, leg, session, year) {
+function makeSessionInsertPromise(pool, leg, session, year) {
   return new Promise(async (resolve, reject) => {
     const client = await pool.connect();
     try {
@@ -15,8 +15,17 @@ const insertSession = function (pool, leg, session, year) {
       client.release();
     }
   });
-};
+}
+
+async function insertSessionsToDB(pool, sessions) {
+  const insertPromises = [];
+  sessions.forEach(({ leg, session, year }) => {
+    insertPromises.push(makeSessionInsertPromise(pool, leg, session, year));
+  });
+  await Promise.all(insertPromises);
+}
 
 module.exports = {
-  insertSession,
+  makeSessionInsertPromise,
+  insertSessionsToDB,
 };
