@@ -1,5 +1,8 @@
 const fs = require('fs');
 const path = require('path');
+
+const { setFileProcessedDTTM } = require('../../support');
+
 const { shouldProcessMemberHTML, parseMemberHTML } = require('./support');
 
 const { getMemberIDFromMemberURL } = require('../dependencies');
@@ -18,8 +21,10 @@ const HTMLFiles = fs.readdirSync(HTMLDir);
       console.log('Processing ' + HTMLFile);
       const html = fs.readFileSync(HTMLFile).toString();
       const member = parseMemberHTML(memberId, html);
-      if (member) fs.writeFileSync(JSONFile, JSON.stringify(member));
-      console.log('Wrote ' + JSONFile + '.');
+      if (member) {
+        fs.writeFileSync(JSONFile, JSON.stringify(member));
+        await setFileProcessedDTTM(pool, HTMLFile);
+      }
     }
   });
 })();

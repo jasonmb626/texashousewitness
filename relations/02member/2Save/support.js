@@ -11,7 +11,7 @@ function shouldProcessMemberJSON(JSONFile, memberUTimes) {
   return shouldProcessJSON(JSONFile, memberUTime);
 }
 
-async function makeMemberInsertPromise(pool, member) {
+async function makeMemberInsertPromise(pool, member, cb) {
   return new Promise(async (resolve, reject) => {
     const surNamePromises = [];
     try {
@@ -32,6 +32,9 @@ async function makeMemberInsertPromise(pool, member) {
         );
       });
       await Promise.all(surNamePromises);
+      if (cb) {
+        await cb();
+      }
       resolve();
     } catch (err) {
       if (err.code === '23505') resolve(); //key already exists
@@ -52,6 +55,7 @@ function insertSurname(pool, memberId, surName, current) {
       );
       resolve(res);
     } catch (err) {
+      if (err.code === '53505') resolve();
       console.error(err);
       reject(err);
     }

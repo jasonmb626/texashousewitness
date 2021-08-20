@@ -1,8 +1,11 @@
 const fs = require('fs');
 const path = require('path');
 const { pool } = require('../../../db');
-const { getMemberUpdateTimes, makeMemberInsertPromise } = require('../db');
-const { shouldProcessMemberJSON } = require('./support');
+const {
+  wasFileUpdatedSinceLastProcessed,
+  setFileProcessedDTTM,
+} = require('../../support');
+const { makeMemberInsertPromise } = require('./support');
 
 const JSONDir = path.join(__dirname, '..', 'JSON');
 
@@ -10,13 +13,26 @@ const JSONFiles = fs.readdirSync(JSONDir);
 
 const insertPromises = [];
 (async () => {
-  const dbUTimes = await getMemberUpdateTimes(pool);
-  JSONFiles.forEach(async (JSONFile) => {
-    const JSONFullPath = path.join(JSONDir, JSONFile);
-    if (shouldProcessMemberJSON(JSONFullPath, dbUTimes)) {
-      const member = JSON.parse(fs.readFileSync(JSONFullPath).toString());
-      insertPromises.push(makeMemberInsertPromise(pool, member));
+  JSONFiles.forEach(async (JSONFileBase) => {
+    const JSONFile = path.join(JSONDir, JSONFileBase);
+    if (await wasFileUpdatedSinceLastProcessed(pool, JSONFile)) {
+      const member = JSON.parse(fs.readFileSync(JSONFile).toString());
+      insertPromises.push(
+        makeMemberInsertPromise(pool, member, async () => {
+          await setFileProcessedDTTM(pool, JSONFile);
+        })
+      );
     }
   });
-  await Promise.all(insertPromises);
-})().finally(() => pool.end());
+  try {
+    await Promise.all(insertPromises);
+  } catch (err) {
+    console.error(err);
+  }
+})().finally(async () => {
+  try {
+    await pool.end();
+  } catch (err) {
+    console.error(err);
+  }
+});
