@@ -2,8 +2,6 @@
 
 exports.shorthands = undefined;
 
-//full_name VARCHAR GENERATED ALWAYS AS (CASE WHEN nick_name = '' OR nick_name IS NULL THEN given_name || ' ' || sur_name ELSE given_name || ' "' || nick_name || '" ' || sur_name END) STORED,
-
 exports.up = (pgm) => {
   pgm.sql(`
   CREATE TABLE member_base (
@@ -61,15 +59,36 @@ exports.up = (pgm) => {
       rep_processed BOOLEAN NOT NULL DEFAULT false,
       PRIMARY KEY (leg, scraped_name, url, district, chamber, party, city, county)
     );
-          
+      
+    CREATE TABLE committee (
+      leg INT NOT NULL,
+      chamber CHAR(1) NOT NULL,
+      code CHAR(4) NOT NULL,
+      parent_legislature INT DEFAULT NULL,
+      parent_code INT DEFAULT NULL,
+      description VARCHAR NOT NULL,
+      update_dttm TIMESTAMP WITH TIME ZONE,
+      PRIMARY KEY (leg, chamber, code),
+      FOREIGN KEY (leg, chamber, code) REFERENCES committee (leg, chamber, code)
+    );
+
+    CREATE TABLE W_FILE (
+      filename VARCHAR,
+      processed_dttm  TIMESTAMP WITH TIME ZONE,
+      PRIMARY KEY (filename)
+    );
   `);
 };
 
 exports.down = (pgm) => {
   pgm.sql(`
+    DROP TABLE W_FILE;
+    DROP TABLE representation;
+    DROP VIEW member;
+    DROP TABLE member_sur_name;
     DROP TABLE member_base;
     DROP TABLE session;
-    DROP TABLE representation;
     DROP TABLE w_representation;
+    DROP TABLE committee;
   `);
 };

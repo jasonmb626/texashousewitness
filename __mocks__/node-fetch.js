@@ -5,7 +5,7 @@ const filepath = path.join(
   __dirname,
   '..',
   'relations',
-  'session',
+  '00session',
   'testData',
   'index.html'
 );
