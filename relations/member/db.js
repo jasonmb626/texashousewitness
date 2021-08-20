@@ -67,8 +67,22 @@ async function getRepMemberIDsToProcess(pool) {
     console.error(err);
   }
 }
+
+async function getMemberUpdateTimes(pool) {
+  try {
+    const res = await pool.query(`
+      SELECT member_id, update_dttm
+      FROM member;
+    `);
+    return res.rows;
+  } catch (err) {
+    console.error(err);
+  }
+}
+
 module.exports = {
   getUnprocessedMembersFromWorkReps,
   insertMember,
   getRepMemberIDsToProcess,
+  getMemberUpdateTimes,
 };
