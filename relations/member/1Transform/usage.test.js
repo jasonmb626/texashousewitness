@@ -2,7 +2,7 @@ const fs = require('fs');
 const path = require('path');
 
 const Context = require('../../../context');
-const { insertMember, getRepMemberIDsToProcess } = require('../db');
+const { makeMemberInsertPromise, getRepMemberIDsToProcess } = require('../db');
 const { insertWork_RepresentationRecords } = require('../dependencies');
 const { shouldProcessMemberHTML } = require('./support');
 
@@ -29,7 +29,7 @@ it('Correctly inserts member into database', async () => {
       { surName: 'Paige', current: false },
     ],
   };
-  await insertMember(context.pool, memberMatch);
+  await makeMemberInsertPromise(context.pool, memberMatch);
 });
 it('Correctly identifies member ids to be processed.', async () => {
   await insertWork_RepresentationRecords(context.pool, repsMatch);

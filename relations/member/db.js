@@ -11,29 +11,33 @@ function getUnprocessedMembersFromWorkReps(pool) {
   });
 }
 
-async function insertMember(pool, member) {
-  const surNamePromises = [];
-  try {
-    await pool.query(
-      `
-      INSERT INTO member_base (member_id, given_name, nick_name, update_dttm)
-      VALUES ($1, $2, $3, CURRENT_TIMESTAMP)`,
-      [member.memberId, member.givenName, member.nickName]
-    );
-    member.surNames.forEach((surNameObj) => {
-      surNamePromises.push(
-        insertSurname(
-          pool,
-          member.memberId,
-          surNameObj.surName,
-          surNameObj.current
-        )
+async function makeMemberInsertPromise(pool, member) {
+  return new Promise(async (resolve, reject) => {
+    const surNamePromises = [];
+    try {
+      await pool.query(
+        `
+        INSERT INTO member_base (member_id, given_name, nick_name, update_dttm)
+        VALUES ($1, $2, $3, CURRENT_TIMESTAMP)`,
+        [member.memberId, member.givenName, member.nickName]
       );
-    });
-    await Promise.all(surNamePromises);
-  } catch (err) {
-    console.error(err);
-  }
+      member.surNames.forEach((surNameObj) => {
+        surNamePromises.push(
+          insertSurname(
+            pool,
+            member.memberId,
+            surNameObj.surName,
+            surNameObj.current
+          )
+        );
+      });
+      await Promise.all(surNamePromises);
+      resolve();
+    } catch (err) {
+      if (err.code === '23505') resolve(); //key already exists
+      reject(err);
+    }
+  });
 }
 
 function insertSurname(pool, memberId, surName, current) {
@@ -82,7 +86,7 @@ async function getMemberUpdateTimes(pool) {
 
 module.exports = {
   getUnprocessedMembersFromWorkReps,
-  insertMember,
+  makeMemberInsertPromise,
   getRepMemberIDsToProcess,
   getMemberUpdateTimes,
 };

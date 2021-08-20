@@ -1,25 +1,22 @@
 const fs = require('fs');
 const path = require('path');
 const { pool } = require('../../../db');
-const { getMemberUpdateTimes } = require('../db');
-const {
-  shouldProcessMemberHTML,
-  getMemberFileNameWMTimes,
-  parseMemberHTML,
-} = require('./support');
+const { getMemberUpdateTimes, makeMemberInsertPromise } = require('../db');
+const { shouldProcessMemberJSON } = require('./support');
 
-const HTMLDir = path.join(__dirname, '..', 'HTML');
+const JSONDir = path.join(__dirname, '..', 'JSON');
 
-const filenameWMTimes = getMemberFileNameWMTimes(HTMLDir);
+const JSONFiles = fs.readdirSync(JSONDir);
 
+const insertPromises = [];
 (async () => {
   const dbUTimes = await getMemberUpdateTimes(pool);
-  filenameWMTimes.forEach(async (filenameWMTime) => {
-    if (shouldProcessMemberHTML(filenameWMTime, dbUTimes)) {
-      const html = fs.readFileSync(filenameWMTime.filename);
-      const member = parseMemberHTML(filenameWMTime.memberId, html);
-      console.log(member);
-      await insertMember(pool, member);
+  JSONFiles.forEach(async (JSONFile) => {
+    const JSONFullPath = path.join(JSONDir, JSONFile);
+    if (shouldProcessMemberJSON(JSONFullPath, dbUTimes)) {
+      const member = JSON.parse(fs.readFileSync(JSONFullPath).toString());
+      insertPromises.push(makeMemberInsertPromise(pool, member));
     }
   });
+  await Promise.all(insertPromises);
 })().finally(() => pool.end());
