@@ -6,17 +6,24 @@ async function insertWork_RepresentationRecords(pool, reps) {
   await Promise.all(insertPromises);
 }
 
-async function makeWorkRepInsertPromise(
-  pool,
-  { leg, scrapedName, URL, memberId, district, chamber, party, city, county }
-) {
+async function makeWorkRepInsertPromise(pool, rep, cb) {
   return new Promise(async (resolve, reject) => {
-    const client = await pool.connect();
+    const {
+      leg,
+      scrapedName,
+      URL,
+      memberId,
+      district,
+      chamber,
+      party,
+      city,
+      county,
+    } = rep;
     try {
       // console.log(
       //   `Inserting (${leg}, ${scrapedName}, ${URL}, ${district}, ${chamber}, ${party}, ${city}, ${county}) into w_representation.`
       // );
-      await client.query(
+      await pool.query(
         `
 				INSERT INTO w_representation (leg, scraped_name, URL, member_id, district, chamber, party, city, county)
 				VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING *;
@@ -33,17 +40,20 @@ async function makeWorkRepInsertPromise(
           county,
         ]
       );
-      // console.log(
-      //   `Inserted (${leg}, ${scrapedName}, ${district}, ${chamber}, ${party}, ${city}, ${county}) into w_representation.`
-      // );
+      if (cb) {
+        await cb();
+      }
       resolve();
     } catch (err) {
-      console.error(err);
-      reject(err);
-    } finally {
-      client.release();
+      if (err.code === '23505') {
+        resolve();
+      } else {
+        console.error(err);
+        reject(err);
+      }
     }
   });
+  reject();
 }
 
 async function getAllLegs(pool) {

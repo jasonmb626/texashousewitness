@@ -66,7 +66,7 @@ exports.up = (pgm) => {
       code CHAR(4) NOT NULL,
       parent_legislature INT DEFAULT NULL,
       parent_code INT DEFAULT NULL,
-      description VARCHAR NOT NULL,
+      name VARCHAR NOT NULL,
       update_dttm TIMESTAMP WITH TIME ZONE,
       PRIMARY KEY (leg, chamber, code),
       FOREIGN KEY (leg, chamber, code) REFERENCES committee (leg, chamber, code)

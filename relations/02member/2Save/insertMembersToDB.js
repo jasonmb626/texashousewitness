@@ -13,6 +13,7 @@ const JSONFiles = fs.readdirSync(JSONDir);
 
 const insertPromises = [];
 (async () => {
+  await pool.query('SELECT 1+1;');
   JSONFiles.forEach(async (JSONFileBase) => {
     const JSONFile = path.join(JSONDir, JSONFileBase);
     if (await wasFileUpdatedSinceLastProcessed(pool, JSONFile)) {
@@ -29,10 +30,4 @@ const insertPromises = [];
   } catch (err) {
     console.error(err);
   }
-})().finally(async () => {
-  try {
-    await pool.end();
-  } catch (err) {
-    console.error(err);
-  }
-});
+})().finally(() => pool.end());

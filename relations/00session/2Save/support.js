@@ -10,6 +10,9 @@ function makeSessionInsertPromise(pool, leg, session, year) {
       // console.log(`Inserted ${leg}, ${session}, ${year} into session table`);
       resolve(res.rows[0]);
     } catch (err) {
+      if (err.code === '23505') {
+        resolve();
+      }
       reject(err);
     } finally {
       client.release();
