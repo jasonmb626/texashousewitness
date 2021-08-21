@@ -20,7 +20,7 @@ async function wasFileUpdatedSinceLastProcessed(pool, filename) {
   return processedDTTM < modifiedDTTM;
 }
 
-function shouldProcessHTMLToJSON(htmlFile, jsonfile) {
+function wasHTMLUpdatedSinceLastProcessToJSON(htmlFile, jsonfile) {
   const htmlstats = fs.statSync(htmlFile);
   const html_dttm = new Date(htmlstats.mtime);
   let jsonstats;
@@ -28,17 +28,11 @@ function shouldProcessHTMLToJSON(htmlFile, jsonfile) {
   try {
     jsonstats = fs.statSync(jsonfile);
     json_dttm = new Date(jsonstats.mtime);
-    if (html_dttm > json_dttm) return true;
-    return false;
+    return html_dttm > json_dttm;
   } catch (err) {
     return true;
   }
-}
-
-function shouldProcessJSON(JSONFile, dbUpdateDTTM) {
-  const JSONMTime = new Date(fs.statSync(JSONFile).mtime);
-  const UTime = new Date(dbUpdateDTTM);
-  return JSONMTime > UTime;
+  d;
 }
 
 async function setFileProcessedDTTM(pool, filename) {
@@ -73,8 +67,7 @@ async function getFileProcessedDTTM(pool, filename) {
 }
 
 module.exports = {
-  shouldProcessHTMLToJSON,
-  shouldProcessJSON,
+  wasHTMLUpdatedSinceLastProcessToJSON,
   setFileProcessedDTTM,
   getFileProcessedDTTM,
   wasFileUpdatedSinceLastProcessed,

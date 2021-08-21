@@ -136,7 +136,23 @@ function getMemberFileNameWMTimes(dir) {
   });
 }
 
+async function getRepMemberIDsToProcess(pool) {
+  try {
+    const res = await pool.query(`
+    SELECT a.member_id missing, b.member_id
+    FROM w_representation a LEFT JOIN member b ON b.member_id = a.member_id
+    WHERE b.member_id IS NULL
+    ORDER BY missing;
+  `);
+    return res.rows.map((row) => row.missing);
+  } catch (err) {
+    console.error(err);
+  }
+}
+
 module.exports = {
+  getUnprocessedMembersFromWorkReps,
+  getRepMemberIDsToProcess,
   parseMemberHTML,
   getMemberFileNameWMTimes,
 };

@@ -1,7 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 
-const { getSessionHTML } = require('./fetchSessions/support');
+const { getSessionHTML } = require('./support');
 
 (async () => {
   console.log('Fetching Sessions');

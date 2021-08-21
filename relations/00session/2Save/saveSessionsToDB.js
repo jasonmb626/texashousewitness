@@ -11,7 +11,6 @@ const {
 const filename = path.join(__dirname, '..', 'sessions.json');
 
 (async () => {
-  await pool.query('SELECT 1+1;');
   if (await wasFileUpdatedSinceLastProcessed(pool, filename)) {
     try {
       const sessions = JSON.parse(fs.readFileSync(filename).toString());
@@ -19,8 +18,6 @@ const filename = path.join(__dirname, '..', 'sessions.json');
       await setFileProcessedDTTM(pool, filename);
     } catch (err) {
       console.error(err);
-    } finally {
-      await pool.end();
     }
   }
-})().finally(async () => await pool.end());
+})().finally(() => pool.end());
